@@ -1,0 +1,11 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment folders (if you ever use them)
+venv/
+env/
+
+# OS generated files
+.DS_Store
