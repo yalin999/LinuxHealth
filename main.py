@@ -1,8 +1,6 @@
-from src import sensors
 import time
 
-# Import necessary functions from src/sensor.py
-from src import sensors  # This tells Python: "Go into 'src' and find 'sensors.py'"
+from src.sensors import Sensors
 
 # Color function for visual alert system
 def get_color(value):
@@ -24,6 +22,9 @@ RESET = "\033[0m"
 
 # Clear once at the start
 print("\033[2J", end="")
+
+# Instantiate sensor reader once so we reuse stateful psutil handles when possible
+sensors = Sensors()
 
 # --- Main Execution ---      
 try:
@@ -65,4 +66,3 @@ try:
 # If the user presses Ctrl+C, this block catches the 'KeyboardInterrupt' error
 except KeyboardInterrupt:
     print(f"\n{RESET}Dashboard closed cleanly. Goodbye!")
-
