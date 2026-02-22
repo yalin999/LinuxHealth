@@ -34,6 +34,9 @@ try:
         # Move back to top-left instead of clearing
         print(HOME, end="")
 
+        # Get Kernel Threads
+        k_threads = sensors.get_kernel_threads()
+
         # Get uptime value
         uptime = sensors.get_uptime()
 
@@ -54,12 +57,48 @@ try:
         cpu_color = get_color(cpu_percent)
         ram_color = get_color(ram_percent)
 
-        # Print the measured CPU usage, RAM usage and battery status
+        # Get Disk/Pantry health
+        disk_health = sensors.get_disk_status()
+        io_val = sensors.get_io_wait()
+
+        # Get Network speeds
+        net_stats = sensors.get_network_speed()
+        down_speed = net_stats["down"]
+        up_speed = net_stats["up"]
+
+        # Print CPU usage, RAM usage and battery status
         print("--- LINUX HEALTH MONITOR ---\n")
+
+        # Print uptime
         print(f"Uptime: {uptime}\n")
+
+        # Print CPU usage
         print(f"CPU: {cpu_color}{cpu_percent}%{RESET} || {cpu_speed}\n")
+
+        # Print RAM usage
         print(f"RAM: {ram_color}{ram_percent}%{RESET} || {ram_used_gb} / {ram_total_gb} GB\n")
+
+        # Print battery status
         print(f"Battery: {battery_status}\n")
+
+        # Print network status
+        print(f"Network: ↓ {down_speed} KB/s | ↑ {up_speed} KB/s\n")
+
+        # Print disk status
+        print(f"Disk Status: {disk_health} [{io_val}% wait]\n")
+
+        # Print zombie list
+        zombie_list = sensors.get_zombie_processes()
+        
+        print(f"Zombies detected: {len(zombie_list)}")
+        if zombie_list:
+            for z in zombie_list:
+                print(f"  -> [PID: {z['pid']}] {z['name']}")
+
+        # Print total active kernel services
+        print(f"Kernel Threads (Sample): {', '.join(k_threads)}")
+        print(f"Total Active Kernel Services: {len(k_threads)}\n")
+
         # Wait for 1 second before checking the hardware again
         time.sleep(1)
 
