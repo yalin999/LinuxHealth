@@ -1,28 +1,91 @@
-# Linux Health Monitor 🐧
+# 🐧 Linux Health Monitor Pro (v2.1)
 
-An advanced, professional-grade system diagnostic tool built for Fedora and other Linux distributions. This project follows **ISO/IEC 25010** quality standards and **ISO/IEC 12207** lifecycle processes to ensure reliability and maintainability.
+A high-performance, multithreaded system telemetry suite designed for **Linux-based distributions** (Fedora, Ubuntu, Arch, Debian, etc.). This application implements a decoupled architecture to ensure maximum UI responsiveness and resource efficiency while providing deep visibility into kernel-level operations.
 
-## 🚀 Features
-- **CPU & RAM Monitoring**: Real-time utilization and clock speed tracking.
-- **Zombie Detector**: Identifies `defunct` processes (e.g., `zypak-sandbox`) to ensure system hygiene.
-- **Disk I/O Analysis**: Detects "Chef/Pantry" bottlenecks using I/O Wait metrics.
-- **Network Throughput**: Live download/upload speed tracking in KB/s.
-- **Kernel Insights**: Lists active kernel threads and system services.
-- **Power Tracking**: Monitors battery percentage and charging status.
+---
 
-## 🛠️ Architecture
-The project uses a modular **Engine-UI** split:
-- `src/sensors.py`: A stateful Python class for high-performance hardware interrogation using `psutil`.
-- `main.py`: A terminal-based dashboard for real-time monitoring.
-- `gui.py`: (In Development) A professional PyQt6-based desktop interface.
+## 🏗️ Architectural Overview
 
-## 📦 Requirements
-- Python 3.12+
-- `psutil`
-- `PyQt6` (for GUI mode)
+Following **ISO/IEC 12207** (Software Life Cycle) and **ISO/IEC 25010** (System Quality) standards, the monitor is built on a modular, three-tier structure:
 
-## 🔧 Installation
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/yalin999/LinuxHealth.git](https://github.com/yalin999/LinuxHealth.git)
-   cd LinuxHealth
+1. **Hardware Abstraction Layer (`src/sensors.py`)**: A distro-agnostic engine that interfaces with the Linux kernel's `/proc` filesystem via `psutil`.
+2. **Asynchronous Telemetry Engine (`SensorWorker`)**: A dedicated `QThread` that manages data acquisition independently of the UI. It utilizes **Staggered Sampling** (1Hz for hardware metrics, 0.2Hz for kernel discovery) to optimize CPU utilization.
+3. **Presentation Layer (`HealthWindow`)**: A PyQt6-based interface utilizing a **Tabbed Architecture** and **Smart Refresh** logic to minimize GPU draw calls and enhance user operability.
+
+---
+
+## 🚀 Quality Characteristics (ISO/IEC 25010)
+
+| Characteristic | Implementation Detail |
+| --- | --- |
+| **Performance Efficiency** | Staggered sampling: Real-time hardware stats vs. heavy kernel scans. |
+| **Resource Utilization** | **Smart Refresh**: GUI lists only redraw when the underlying data state changes. |
+| **Maintainability** | Decoupled Signal/Slot architecture allows for modular sensor expansion. |
+| **Usability** | Tabbed interface separates high-level KPIs from technical process lists. |
+| **Portability** | Distro-agnostic logic tested across the Linux kernel ecosystem (v2.6+). |
+
+---
+
+## 🛠️ Installation & Setup
+
+### Prerequisites
+
+* **Linux OS**: Any distribution with a modern Linux Kernel.
+* **Python**: Version 3.12 or higher.
+* **Privileges**: Standard user (some kernel thread metadata may require elevated permissions).
+
+### Deployment
+
+1. **Clone the Repository**:
+```bash
+git clone <your-repository-url>
+cd LinuxHealth
+
+```
+
+
+2. **Setup Virtual Environment**:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+```
+
+
+3. **Launch Application**:
+```bash
+python3 gui.py
+
+```
+
+
+
+---
+
+## 📊 Feature Specifications
+
+* **Dashboard Tab**:
+* Real-time CPU usage and frequency ($GHz$).
+* RAM occupancy (Used/Total GB) with dynamic percentage.
+* Instantaneous Network Bitrate (Inbound/Outbound).
+* Disk I/O Wait State analysis (Smooth/Busy/Bottleneck).
+
+
+* **Kernel Threads Tab**:
+* Automated discovery of ~200 system threads.
+* PID, Name, and Status tracking.
+* Exclusion-based filtering of user-space command lines for pure kernel visibility.
+
+
+
+---
+
+## 📅 Development Roadmap (ISO/IEC 12207)
+
+* ✅ **Phase 1**: Core sensor development and CLI prototyping.
+* ✅ **Phase 2**: PyQt6 GUI integration and Layout Management.
+* ✅ **Phase 3**: Multithreading implementation (Asynchronous Worker).
+* ✅ **Phase 4**: Performance Optimization (Smart Refresh & Staggered Sampling).
+* ⏳ **Phase 5**: Predictive Health Analytics and Alerting System.
+
