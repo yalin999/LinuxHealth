@@ -1,4 +1,26 @@
-psutil==5.9.8
-PyQt6==6.6.1
-PyQt6-Qt6==6.6.1
-PyQt6-sip==13.6.0
+# ==============================================================================
+# Linux Health Monitor Pro - Core Dependencies
+# ==============================================================================
+
+# Hardware Abstraction Layer (HAL)
+# Minimum 5.9.0 for reliable Linux process iteration (PID 2 tracking)
+psutil>=5.9.0
+
+# Graphical User Interface Framework
+# Pinning to 6.4.x to ensure signal/slot compatibility
+PyQt6>=6.4.0,<6.7.0
+
+# Scientific Plotting and Visualization
+# Required for real-time history curves in CPU/RAM/Net widgets
+pyqtgraph>=0.13.0
+
+# Numerical Computation Engine
+# Requirement for pyqtgraph's high-speed array processing
+numpy>=1.20.0; python_version < '3.12'
+numpy>=1.26.0; python_version >= '3.12'
+
+# ==============================================================================
+# Operational & Debugging (Optional but recommended)
+# ==============================================================================
+# setuptools is often required for certain psutil builds on older Linux distros
+setuptools

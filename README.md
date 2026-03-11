@@ -1,91 +1,77 @@
-# 🐧 Linux Health Monitor Pro (v2.1)
+# 🐧 Linux Health Monitor Pro
 
-A high-performance, multithreaded system telemetry suite designed for **Linux-based distributions** (Fedora, Ubuntu, Arch, Debian, etc.). This application implements a decoupled architecture to ensure maximum UI responsiveness and resource efficiency while providing deep visibility into kernel-level operations.
+[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Framework: PyQt6](https://img.shields.io/badge/UI-PyQt6-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
 
----
-
-## 🏗️ Architectural Overview
-
-Following **ISO/IEC 12207** (Software Life Cycle) and **ISO/IEC 25010** (System Quality) standards, the monitor is built on a modular, three-tier structure:
-
-1. **Hardware Abstraction Layer (`src/sensors.py`)**: A distro-agnostic engine that interfaces with the Linux kernel's `/proc` filesystem via `psutil`.
-2. **Asynchronous Telemetry Engine (`SensorWorker`)**: A dedicated `QThread` that manages data acquisition independently of the UI. It utilizes **Staggered Sampling** (1Hz for hardware metrics, 0.2Hz for kernel discovery) to optimize CPU utilization.
-3. **Presentation Layer (`HealthWindow`)**: A PyQt6-based interface utilizing a **Tabbed Architecture** and **Smart Refresh** logic to minimize GPU draw calls and enhance user operability.
-
----
-
-## 🚀 Quality Characteristics (ISO/IEC 25010)
-
-| Characteristic | Implementation Detail |
-| --- | --- |
-| **Performance Efficiency** | Staggered sampling: Real-time hardware stats vs. heavy kernel scans. |
-| **Resource Utilization** | **Smart Refresh**: GUI lists only redraw when the underlying data state changes. |
-| **Maintainability** | Decoupled Signal/Slot architecture allows for modular sensor expansion. |
-| **Usability** | Tabbed interface separates high-level KPIs from technical process lists. |
-| **Portability** | Distro-agnostic logic tested across the Linux kernel ecosystem (v2.6+). |
-
----
-
-## 🛠️ Installation & Setup
-
-### Prerequisites
-
-* **Linux OS**: Any distribution with a modern Linux Kernel.
-* **Python**: Version 3.12 or higher.
-* **Privileges**: Standard user (some kernel thread metadata may require elevated permissions).
-
-### Deployment
-
-1. **Clone the Repository**:
-```bash
-git clone <your-repository-url>
-cd LinuxHealth
-
-```
+A high-performance, multithreaded system telemetry suite designed for **Linux-based distributions**. This application implements a decoupled architecture to ensure maximum UI responsiveness and resource efficiency while providing deep visibility into hardware and kernel-level operations.
 
 
-2. **Setup Virtual Environment**:
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
 
-```
+## 🏗️ Architectural Design (ISO/IEC 25010)
 
+The project follows a **Modular Component Architecture**, ensuring that hardware logic is strictly separated from the presentation layer:
 
-3. **Launch Application**:
-```bash
-python3 gui.py
-
-```
-
-
+* **Core Orchestrator (`src/core/`)**: Manages the `GlobalWorker` thread, handling asynchronous telemetry sampling at 1Hz to prevent GUI blocking.
+* **Hardware Abstraction Layer (`src/components/`)**: Discrete sensor engines for CPU, RAM, and Network that interface with the Linux kernel via `psutil`.
+* **UI Layer (`src/ui/`)**: A tabbed interface designed for high-density data visualization using `pyqtgraph` for GPU-accelerated plotting.
 
 ---
 
 ## 📊 Feature Specifications
 
-* **Dashboard Tab**:
-* Real-time CPU usage and frequency ($GHz$).
-* RAM occupancy (Used/Total GB) with dynamic percentage.
-* Instantaneous Network Bitrate (Inbound/Outbound).
-* Disk I/O Wait State analysis (Smooth/Busy/Bottleneck).
-
-
-* **Kernel Threads Tab**:
-* Automated discovery of ~200 system threads.
-* PID, Name, and Status tracking.
-* Exclusion-based filtering of user-space command lines for pure kernel visibility.
-
-
+| Component | Metrics Tracked | Visual Encoding |
+| :--- | :--- | :--- |
+| **CPU** | Utilization (%) & Clock Speed (GHz) | Green Trendline (0-100% scale) |
+| **RAM** | Used/Total GB & Virtual Memory % | Blue Trendline (0-100% scale) |
+| **Network** | Ingress (⇩) & Egress (⇧) in KB/s | Dual-stream (Magenta/Cyan) with Area Fill |
+| **Kernel** | PID 2 (`kthreadd`) Child Processes | Monospaced Alignment & Status Tracking |
 
 ---
 
-## 📅 Development Roadmap (ISO/IEC 12207)
+## 🛠️ Installation & Deployment
 
-* ✅ **Phase 1**: Core sensor development and CLI prototyping.
-* ✅ **Phase 2**: PyQt6 GUI integration and Layout Management.
-* ✅ **Phase 3**: Multithreading implementation (Asynchronous Worker).
-* ✅ **Phase 4**: Performance Optimization (Smart Refresh & Staggered Sampling).
-* ⏳ **Phase 5**: Predictive Health Analytics and Alerting System.
+### Prerequisites
+* **Operating System**: Linux (Fedora, Ubuntu, Arch, etc.)
+* **Python**: v3.12 or higher recommended.
+* **Dependencies**: Listed in `requirements.txt`.
 
+### Setup Instructions
+1.  **Clone the Repository**:
+    ```bash
+    git clone [https://github.com/yalin999/LinuxHealth.git](https://github.com/yalin999/LinuxHealth.git)
+    cd LinuxHealth
+    ```
+
+2.  **Initialize Virtual Environment**:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    ```
+
+3.  **Launch the Application**:
+    ```bash
+    python3 main.py
+    ```
+
+---
+
+## 📁 Project Structure
+
+```text
+.
+├── main.py                 # Application Entry Point
+├── requirements.txt        # Dependency Manifest
+├── .gitignore              # Version Control Exclusions
+├── src/
+│   ├── core/
+│   │   └── worker.py       # Asynchronous Telemetry Engine
+│   ├── ui/
+│   │   ├── dashboard_tab.py# Main Telemetry View
+│   │   └── kernel_tab.py   # Process List View
+│   └── components/
+│       ├── cpu/            # CPU Sensor & Widget
+│       ├── ram/            # RAM Sensor & Widget
+│       ├── network/        # Network Sensor & Widget
+│       └── processes/      # Kernel Thread Logic
