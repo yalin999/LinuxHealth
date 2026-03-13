@@ -12,6 +12,7 @@ from src.components.ram.ram_sensor import RAMSensor
 from src.components.disk.disk_sensor import DiskSensor
 from src.components.network.network_sensor import NetworkSensor
 from src.components.processes.kernel.kernel_sensor import KernelSensor
+from src.components.processes.user.process_sensor import ProcessSensor
 
 class GlobalWorker(QThread):
     """
@@ -36,9 +37,12 @@ class GlobalWorker(QThread):
         self.disk = DiskSensor()
         self.net = NetworkSensor()
         self.kernel = KernelSensor()
-        
+        self.user_processes = ProcessSensor()
+
         # Operational flag to control loop lifecycle
         self._is_running = True
+
+        self.process_sort_mode = "cpu"
 
     def run(self):
         """
@@ -54,10 +58,19 @@ class GlobalWorker(QThread):
                     "ram": self.ram.fetch_data(),
                     "disk": self.disk.fetch_data(),
                     "net": self.net.fetch_data(),
+                    "user_processes": [],
                     "kernel": [] 
                 }
                 
-                # Independent sampling for Kernel threads due to high I/O cost
+                # Fetch User Processes
+                try:
+                    telemetry_packet["user_processes"] = self.user_processes.fetch_data(
+                        sort_by=self.process_sort_mode
+                    )
+                except Exception as e:
+                    logging.warning(f"User process sampling failed: {e}")
+
+                # Fetch Kernel Threads
                 try:
                     telemetry_packet["kernel"] = self.kernel.fetch_data()
                 except Exception as e:
@@ -71,7 +84,14 @@ class GlobalWorker(QThread):
                 
             # Throttle sampling to 1Hz (1000ms) to maintain low CPU overhead
             self.msleep(1000)
-
+    
+    def set_process_sort_mode(self, mode: str):
+        """
+        @brief Updates the sorting criteria for the next sampling cycle.
+        @param mode 'cpu' or 'ram'
+        """
+        self.process_sort_mode = mode
+        
     def stop(self):
         """
         @brief Gracefully terminates the worker thread.
