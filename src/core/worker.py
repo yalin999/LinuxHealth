@@ -9,6 +9,7 @@ import logging
 from PyQt6.QtCore import QThread, pyqtSignal
 from src.components.cpu.cpu_sensor import CPUSensor
 from src.components.ram.ram_sensor import RAMSensor
+from src.components.disk.disk_sensor import DiskSensor
 from src.components.network.network_sensor import NetworkSensor
 from src.components.processes.kernel.kernel_sensor import KernelSensor
 
@@ -32,6 +33,7 @@ class GlobalWorker(QThread):
         super().__init__()
         self.cpu = CPUSensor()
         self.ram = RAMSensor()
+        self.disk = DiskSensor()
         self.net = NetworkSensor()
         self.kernel = KernelSensor()
         
@@ -50,6 +52,7 @@ class GlobalWorker(QThread):
                 telemetry_packet = {
                     "cpu": self.cpu.fetch_data(),
                     "ram": self.ram.fetch_data(),
+                    "disk": self.disk.fetch_data(),
                     "net": self.net.fetch_data(),
                     "kernel": [] 
                 }

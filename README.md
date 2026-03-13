@@ -13,7 +13,7 @@ A high-performance, multithreaded system telemetry suite designed for **Linux-ba
 The project follows a **Modular Component Architecture**, ensuring that hardware logic is strictly separated from the presentation layer:
 
 * **Core Orchestrator (`src/core/`)**: Manages the `GlobalWorker` thread, handling asynchronous telemetry sampling at 1Hz to prevent GUI blocking.
-* **Hardware Abstraction Layer (`src/components/`)**: Discrete sensor engines for CPU, RAM, and Network that interface with the Linux kernel via `psutil`.
+* **Hardware Abstraction Layer (`src/components/`)**: Discrete sensor engines for CPU, RAM, Disk and Network that interface with the Linux kernel via `psutil`.
 * **UI Layer (`src/ui/`)**: A tabbed interface designed for high-density data visualization using `pyqtgraph` for GPU-accelerated plotting.
 
 ---
@@ -24,6 +24,7 @@ The project follows a **Modular Component Architecture**, ensuring that hardware
 | :--- | :--- | :--- |
 | **CPU** | Utilization (%) & Clock Speed (GHz) | Green Trendline (0-100% scale) |
 | **RAM** | Used/Total GB & Virtual Memory % | Blue Trendline (0-100% scale) |
+| **Disk** | Read (R) & Write (W) | Dual-stream (Yellow/Orange) with Area Fill |
 | **Network** | Ingress (⇩) & Egress (⇧) in KB/s | Dual-stream (Magenta/Cyan) with Area Fill |
 | **Kernel** | PID 2 (`kthreadd`) Child Processes | Monospaced Alignment & Status Tracking |
 
@@ -72,6 +73,7 @@ The project follows a **Modular Component Architecture**, ensuring that hardware
 │   │   └── kernel_tab.py   # Process List View
 │   └── components/
 │       ├── cpu/            # CPU Sensor & Widget
+│       ├── disk/           # Disk Sensor & Widget
 │       ├── ram/            # RAM Sensor & Widget
 │       ├── network/        # Network Sensor & Widget
 │       └── processes/      # Kernel Thread Logic
